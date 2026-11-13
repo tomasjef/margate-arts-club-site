@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "margate-arts-club",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Next's cache, in the club's Cloudflare account
+  "kv_namespaces": [{ "binding": "NEXT_INC_CACHE_KV", "id": "<kv-namespace-id>" }],
+  // the Worker calling itself: how a page is refreshed once its five minutes are up (the queue in open-next.config.ts)
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "margate-arts-club" }],
+  // the mailing list (migrations/ holds its tables)
+  "d1_databases": [{ "binding": "DB", "database_name": "margate-arts-club-newsletter", "database_id": "<d1-database-id>", "migrations_dir": "migrations" }],
+  // every ten minutes: look for a newsletter that is due (Monday 8am, the 1st at 8am) or half-sent (see src/lib/newsletter-send.ts)
+  "triggers": { "crons": ["*/10 * * * *"] },
+  // Cloudflare's own email, for the alert when Amazon SES stops sending (worker.ts). It may only send to the account's verified Email Routing
+  // destination addresses; the address is the Worker secret ALERT_EMAIL.
+  "send_email": [{ "name": "ALERT_MAIL" }],
+  // The addresses the site answers on, besides the workers.dev one: margatearts.club since the launch on 6 Nov 2026 (www sends people there,
+  // see worker.ts), and new.margatearts.club, the test address before it, kept so links in emails sent before the launch still work (worker.ts
+  // keeps it out of search)
+  "routes": [
+    { "pattern": "margatearts.club", "custom_domain": true },
+    { "pattern": "www.margatearts.club", "custom_domain": true },
+    { "pattern": "new.margatearts.club", "custom_domain": true }
+  ],
+  // the address in links inside emails (confirm, unsubscribe, change)
+  "vars": { "SITE_URL": "https://margatearts.club", "EMAIL_FROM": "Margate Arts Club <news@margatearts.club>", "AWS_REGION": "eu-west-2" },
+  "observability": { "enabled": true }
+}

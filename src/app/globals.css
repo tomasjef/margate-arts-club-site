@@ -1,0 +1,455 @@
+@import "tailwindcss";
+
+/* One type scale shared by the component classes (.t-*): three sizes, Large, Text and Small (see --fs-*
+   below). */
+@theme {
+  --color-surface: #ffffff;
+  --color-ink: #000000;
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-light: var(--muted-light);
+  --color-open: var(--open);
+  --font-sans: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  color-scheme: only light; /* never darkened by the browser (see viewport in layout.tsx) */
+  /* One warm-neutral family. The page is --page-bg (white since 3 Nov 2026; it was the grey #f6f6f5), the event cards are white (--color-surface), and
+     buttons and chips are --card. Secondary text is --muted, at least 4.5:1 (AA) on the page and on white.
+     These :root values are the one source: the --color-* theme tokens above point at them. */
+  --page-bg: #ffffff;
+  --card: #ecebe8;
+  --muted: rgb(0 0 0 / 0.65); /* secondary text: black at 65%, so on a coloured block it shows the block's colour through it (about 7:1 on the page and on white, more on the pale blocks) */
+  --muted-light: rgb(0 0 0 / 0.5); /* notes and small print that nobody needs in order to act: black at 50%, about 3.7:1 on the tan block, so only for extras */
+  --sold: #ff0000; /* pure red: the sold-out box, the Closed status and the sign-up warning (white type on it is 4:1, so it is for large or bold text) */
+  --panel-grey: #dededd; /* secondary palette, first design colours lightened: pale panels for black type (13:1 or better) */
+  --panel-tan: #e8e2db; /* tan, sage and purple 30% lighter on 3 Nov 2026 (were #ded5cc, #cfd7d1, #e3cee1) */
+  --panel-sage: #dde3df;
+  --panel-purple: #ebddea;
+  --panel-olive: #d9d5bd;
+  --panel-tan-deep: #b08a68; /* the same colours, deeper: the wash over the photos on Visit, Music and About */
+  --panel-sage-deep: #6f9a80;
+  --panel-purple-deep: #a56fa0;
+  --open: #00a35c; /* the open status, and the green of the logo square (brighter than before: about 3:1 on the page, under the 4.5:1 text floor) */
+  /* 1440px design scaled: 30px = 2.083vw, 24px = 1.667vw, 20px = 1.389vw, 72px = 5vw */
+  --pad: clamp(14px, 1.528vw, 22px);
+  --header-h: clamp(52px, 5vw, 72px);
+  /* where the open menu's first line starts (and, below lg, the page's name), from the bottom of the header's bar */
+  --menu-top: calc(1.35em - var(--header-h) / 2);
+  --card-pad: clamp(14px, 1.389vw, 20px);
+
+  /* Three type sizes for the whole site. On phones (under 768px): Large 22px (the copy in the boxes, What's On's dates and titles;
+     the site name and the menu are a step larger, see below), Text 18px (buttons, messages) and Small 16px (dates, filters, price,
+     tags, footer, hours, labels). From 768px up they scale with the viewport from the 1440px Figma frame: Large and
+     Text are both 30px at 1440, Small is 20px. Everything below points at these three.
+     One leading for all of it, the same on phones, desktop and in the newsletter: 1.2, with one line (1.2em) between paragraphs. The
+     website's footer, small print, is a touch more open: 1.3. */
+  --fs-large: 22px;
+  --fs-text: 18px;
+  --fs-small: 16px;
+
+  --headline-fs: var(--fs-large);
+  --headline-lh: 1.2;
+
+  --nav-fs: var(--fs-large);
+  --nav-lh: 1.2;
+  --nav-fw: 600;
+  --nav-ls: 0;
+
+  --title-fs: var(--fs-text);
+  --title-lh: 1.2;
+  --title-fw: 600;
+  --title-ls: 0;
+
+  /* Small: dates, filters, price, buttons, tags, open hours, the footer, the email field */
+  --mid-fs: var(--fs-small);
+  --mid-lh: 1.2;
+  --foot-lh: 1.3;
+
+  --date-fs: var(--fs-small);
+  --filter-fs: var(--fs-small);
+  --date-lh: var(--mid-lh);
+  --date-fw: 500;
+  --date-ls: 0;
+
+  --body-fs: var(--fs-text);
+  --body-lh: 1.2;
+  --body-fw: 600;
+  --body-ls: 0;
+
+  /* Every box button (the menu, Subscribe, Book Tickets...) and the price and status boxes: this much inside a 1px border, in ems of
+     the box's own type (8px by about 11px on phones; tablets and desktop are taller, see below) */
+  --btn-py: 0.5em;
+  --btn-px: 0.7em;
+}
+
+/* From 768px up (the layout's md breakpoint) the three sizes scale with the viewport, never below the phone sizes (so a tablet is never smaller than a phone). */
+@media (min-width: 768px) {
+  :root {
+    --fs-large: clamp(22px, 2.083vw, 30px);
+    --fs-text: clamp(18px, 2.083vw, 30px);
+    --fs-small: clamp(16px, 1.389vw, 20px);
+    /* Tablets and desktop: every box button is at least 44px tall, growing to 48px at full desktop size (1440px wide and up), a
+       touch more room above and below the words (the user's request, 6 Nov 2026; they were 37px on tablets, 46px on desktop). 44px is
+       WCAG 2.2's enhanced target size (2.5.5, AAA; the AA minimum is 24px) and Apple's; 48px is Google's Material size. In the
+       buttons' own type (the Small size, 16 to 20px, 1.2 line, 1px border): 0.55em, or as much as makes 44px, whichever is more. */
+    --btn-py: max(0.55em, calc(21px - 0.6em));
+  }
+  /* the price and status boxes (the old What's On) are not buttons: they keep the half em */
+  .chip {
+    --btn-py: 0.5em;
+  }
+}
+
+/* Phones and tablets: the site name, the menu and the open note are larger than the three sizes above (26px, 19px). From 1440px
+   the desktop sizes take over again. */
+:root {
+  --headline-fs: clamp(26px, 2.083vw, 30px);
+  --nav-fs: clamp(26px, 2.083vw, 30px);
+}
+/* narrow phones: the name shrinks with the screen so it never meets the menu bars (22px up to 333px wide, 26px from 394px), and never
+   past what fits beside them: the name (logo and words) is 11.79 times its size wide, then 16px and the 25px bars, inside the two
+   margins (so 20.6px at 320px, where 22px would push the bars onto the screen's edge; from about 345px wide the plain size fits). The pages' text (the
+   boxes on Visit, Music, About, the legal and mailing list pages) is the Large size on phones (chosen 4 Nov 2026 over 18px);
+   What's On's dates and titles and the open menu are the site name's size (5 Nov 2026). */
+@media (max-width: 767px) {
+  :root {
+    /* phones: the margin unit 18px (14px until 6 Nov 2026, then 20px for a day, then 18px, the user's choice): the page's edges and every
+       gap built from it, the footer's too */
+    --pad: 18px;
+    --headline-fs: min(clamp(22px, 6.6vw, 26px), calc((100vw - 2 * var(--pad) - 41px) / 11.79));
+    --nav-fs: var(--headline-fs);
+    --body-fs: var(--fs-large);
+  }
+}
+.t-open {
+  font-size: clamp(19px, 1.389vw, 20px);
+}
+
+@layer components {
+  /* The home page's headline and the site name in the header: larger on phones, the menu size on desktop */
+  .t-headline {
+    font-size: var(--headline-fs);
+    line-height: var(--headline-lh);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .t-nav {
+    font-size: var(--nav-fs);
+    line-height: var(--nav-lh);
+    font-weight: var(--nav-fw);
+    letter-spacing: var(--nav-ls);
+    text-transform: uppercase;
+  }
+  /* Phones: the page's name on its own line under the header (Visit, Music, About, the legal pages, the mailing-list pages, Page not
+     found), with .t-nav: 1.75 times the site name's size (45px on an iPhone), at the left, and the same space (one and a half
+     margins, 30px; the user's choice on 6 Nov 2026, after trying one and two) from the site name's baseline to its capitals as from
+     its baseline to what comes next. At that size every name the site has now, the
+     longest word being ACCESSIBILITY, fits on any phone, so all pages share one size; a longer word (a page the club adds) is set
+     just small enough that it fits: --title-word is that word's width in ems (titleWordStyle in lib/title-width.ts, set on the
+     element). The sums use Archivo's measurements: on a 1.2 line the capitals start
+     0.246em down and the line ends 0.268em under the baseline, and the site name's baseline is 0.332 of its size below the middle of
+     the header's bar. A name after another part (the legal pages' second and third) sets --title-above, the space from the box above.
+     --title-rule is the header's 1px hairline, on the pages that have one. From 768px the elements' own md: classes set it. */
+  @media (max-width: 767px) {
+    .page-title {
+      --title-gap: calc(var(--pad) * 1.5);
+      font-size: min(calc(var(--headline-fs) * 1.75), calc((100vw - 2 * var(--pad)) / var(--title-word, 1)));
+      line-height: 1.2;
+      text-wrap: balance;
+      margin-top: calc(var(--title-above, var(--title-gap) - var(--header-h) / 2 + 0.332 * var(--headline-fs) - var(--title-rule, 0px)) - 0.246em);
+      padding-bottom: calc(var(--title-gap) - 0.268em);
+      /* opened at its part (/accessibility, /company): the name sits under the sticky header where the first one sits */
+      scroll-margin-top: calc(var(--header-h) + var(--title-gap) - var(--header-h) / 2 + 0.332 * var(--headline-fs) - 0.246em);
+    }
+  }
+  .t-title {
+    font-size: var(--title-fs);
+    line-height: var(--title-lh);
+    font-weight: var(--title-fw);
+    letter-spacing: var(--title-ls);
+  }
+  .t-date {
+    font-size: var(--date-fs);
+    line-height: var(--date-lh);
+    font-weight: var(--date-fw);
+    letter-spacing: var(--date-ls);
+    text-transform: uppercase;
+  }
+  .t-body {
+    font-size: var(--body-fs);
+    line-height: var(--body-lh);
+    font-weight: var(--body-fw);
+    letter-spacing: var(--body-ls);
+  }
+  .t-button {
+    font-size: var(--mid-fs);
+    line-height: var(--mid-lh);
+    font-weight: 500;
+  }
+  .t-filter {
+    font-size: var(--filter-fs);
+    line-height: var(--mid-lh);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+  .t-tag {
+    font-size: var(--fs-small);
+    line-height: 1.2;
+    font-weight: 500;
+  }
+  /* Links in the body (copy, tiles, tables, lists, the footer): always underlined with a hairline, and
+     grey on hover with the underline kept. The header's page links are the exception (see SiteHeader). */
+  .t-link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
+  }
+  @media (hover: hover) {
+    .t-link:hover {
+      color: var(--color-muted);
+    }
+  }
+  .t-open {
+    font-size: var(--mid-fs);
+    line-height: var(--mid-lh);
+    font-weight: 500;
+  }
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* Links show the hand by default; buttons don't, so give every working button the same. Text
+   fields keep their text cursor. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+/* The search field sits between two hairlines, so a box round it looks heavy. Instead of the
+   outline, the caret shows and the grey "Search" stays until the visitor starts typing. */
+.search-field:focus-visible {
+  outline: none;
+}
+
+/* Phones: a line that starts on the page margin is pulled left by its first letter's own space (--ink, in em, set by inkStyle in
+   lib/ink.ts), so its ink starts on the margin, level with the logo, the posters, the boxes and the lines (an N at the page titles'
+   45px otherwise starts 3.4px in). From 768px nothing moves. */
+@media (max-width: 767px) {
+  .ink {
+    margin-left: calc(var(--ink, 0) * -1em);
+  }
+}
+
+/* The header (the row with the name) stays at the top of the window while the page scrolls */
+.site-header {
+  position: sticky;
+  top: 0;
+}
+
+/* Event cards are white. */
+article {
+  background: var(--color-surface);
+}
+
+/* A sold-out, waiting-list or resale event shows that status in a black box in place of the price;
+   sold out alone is red. */
+.chip--status {
+  background: var(--color-ink);
+  color: var(--color-surface);
+}
+.chip--sold {
+  background: var(--sold);
+}
+
+/* Hovering an event thickens its box from a hairline to 3px (the 1px border plus a 2px outline drawn
+   just outside it, over the gap). Instant, with no fade. Only where there is a real pointer, so a tap on
+   a phone does not leave a box stuck thick. The price box reverses at the same time, to a black box with
+   white type, the way a sold-out status always looks. */
+@media (hover: hover) {
+  #event-results > li:hover {
+    outline: 2px solid var(--color-ink);
+  }
+  #event-results > li:hover .chip:not(.chip--status) {
+    background: var(--color-ink);
+    color: var(--color-surface);
+  }
+}
+
+/* Visit (tan), Music (sage) and About (purple) have text boxes in their own pale colour, black type; everything else stays white.
+   The page sets --panel (ImageTextPage's `panel`). Its photos get a light wash of the same colour, laid over the photo with
+   multiply (the photo's own darks stay, the lights take the colour) and a touch less saturation, so the photos and the boxes
+   belong together. Done when the page is drawn, so the original photo is kept as uploaded and the strength can be changed here. */
+.text-block[data-panel] { background: var(--panel); color: #000; }
+/* The photos on the pages (not the event posters) can't be dragged out or saved with a right-click or a long press: a clear layer sits over each
+   one, so the click lands on the layer, not the picture. A deterrent only: a screenshot or the page's source still gets the image. */
+.photo-shield { position: absolute; inset: 0; z-index: 2; }
+.photo-shield ~ img, img:has(+ .photo-shield) { -webkit-user-drag: none; user-select: none; -webkit-touch-callout: none; }
+.photo-tint { --tint-strength: 0.6; --hue-strength: 0.15; }
+.photo-tint img { filter: saturate(0.95); }
+/* two soft layers: the pale colour multiplied in from the bottom edge, fading out towards the top, and a very light wash of the
+   deeper colour's hue over the whole photo */
+.photo-tint::before,
+.photo-tint::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.photo-tint::before {
+  background: linear-gradient(to top, var(--panel), transparent 85%);
+  mix-blend-mode: multiply;
+  opacity: var(--tint-strength);
+}
+.photo-tint::after { background: var(--panel-deep); mix-blend-mode: color; opacity: var(--hue-strength); }
+
+/* Boxed buttons for the date filters and Jump to links: outlined white boxes, black when
+   hovered or chosen, no hairline bars. The default is the plain grey text between two hairlines. */
+html[data-buttons="boxed"] .bar {
+  border-width: 0;
+  min-height: 0;
+  justify-content: flex-start;
+  column-gap: var(--pad);
+  row-gap: var(--pad);
+}
+html[data-buttons="boxed"] .bar ul {
+  justify-content: flex-start;
+  column-gap: var(--pad);
+  row-gap: var(--pad);
+}
+html[data-buttons="boxed"] .bar-item {
+  height: auto;
+  border: 1px solid var(--color-ink);
+  background: #fff;
+  color: var(--color-ink);
+  padding: var(--btn-py) var(--btn-px);
+}
+html[data-buttons="boxed"] .bar-item:hover,
+html[data-buttons="boxed"] .bar-item[aria-pressed="true"],
+html[data-buttons="boxed"] .bar-item[aria-current="page"] {
+  background: var(--color-ink);
+  color: #fff;
+}
+
+/* Under the open menu the boxed buttons sit one --pad below the last menu line: the menu's own bottom padding
+   was sized for the hairline bar (a 3rem row with hairlines), which put the buttons further away. */
+@media (min-width: 768px) {
+  html[data-buttons="boxed"]:has(.bar) #site-menu {
+    padding-bottom: calc(var(--pad) / 2 + 13.5px); /* measured from the last line's baseline to the buttons: 36px, the same as the name to the first line */
+  }
+}
+
+/* Boxed bar spacing, one --pad everywhere (measured at 1512px wide, --pad 24px): from the bottom of the site
+   name's capitals to the menu's buttons (the header is 8px shorter on desktop to get there: the capitals' baseline sits
+   a --header-h/2 + 10px down), buttons to the first block (the content's --pad). The buttons scroll away with the page;
+   only the name's row stays (SiteHeader). */
+@media (min-width: 768px) {
+  html[data-buttons="boxed"] {
+    --pad: clamp(14px, 1.667vw, 24px); /* the page margin and every gap built from it: 24px from 1440px wide (22px in the plain option) */
+  }
+  html[data-buttons="boxed"] {
+    --card-pad: var(--pad); /* inside an event text square: the page margin, as in the other text boxes */
+  }
+  html[data-buttons="boxed"]:has(.bar) {
+    --header-h: clamp(46px, 4.722vw, 68px); /* 4px more than before, so the name-to-buttons gap grows with the margin */
+  }
+  /* A link to a section (and /accessibility, /company: LegalPage) lands it one --pad under the name's row, the part of the header
+     that stays (the menu's buttons scroll away with the page). A legal page's part has that margin above its box already. */
+  html[data-buttons="boxed"] section[id] {
+    scroll-margin-top: calc(var(--header-h) + var(--pad));
+  }
+  html[data-buttons="boxed"] section[data-legal] {
+    scroll-margin-top: var(--header-h);
+  }
+}
+
+/* Boxed-button option only: the open menu's first line sits 36px below the bottom of the site name's capitals (measured to the top of its capitals), the same as the last line to the buttons */
+@media (min-width: 768px) {
+  html[data-buttons="boxed"] {
+    --menu-top: calc(1.3em - var(--header-h) / 2 - 2px);
+  }
+}
+
+/* Boxed-button option: no tagline on What's On (the page keeps its hidden h1 for screen readers). */
+html[data-buttons="boxed"] .tg-top,
+html[data-buttons="boxed"] .tg-bottom {
+  display: none;
+}
+
+/* Boxed-button option, desktop: three margins above the footer (it was four) and under it half the header bar and one margin (the margin
+   added 5 Nov 2026; it was one --header-h, then half of it) */
+@media (min-width: 768px) {
+  html[data-buttons="boxed"] footer {
+    margin-top: calc(var(--pad) * 3);
+    padding-bottom: calc(var(--header-h) / 2 + var(--pad));
+  }
+}
+
+/* Boxed-button option: the poster square takes the page colour behind the picture, while the rest of the ticket stays white: when a long
+   title makes the text box taller than the poster, the space under the poster is white, not grey (the price boxes keep --card) */
+html[data-buttons="boxed"] #event-results > li {
+  background: var(--color-surface);
+}
+html[data-buttons="boxed"] #event-results .poster {
+  background: var(--page-bg);
+}
+html[data-buttons="boxed"] #event-results article {
+  background: var(--color-surface);
+}
+
+/* Event cards on tablets (768 to 1023px): one card to a row, as on phones, so each text square is about half the page wide (twice what
+   the two-column desktop gives it). The title grows with that square, the way it does on desktop: 18px on a phone, about 25px here. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  #event-results {
+    --title-fs: clamp(22px, 3.3vw, 28px);
+  }
+}
+
+/* Phones: a date range inside a narrow card (half the page less 42px) shrinks so that each half of it still fits on one line. (No
+   button bars on phones: What's On has no date filters there and the legal pages are one long page.) */
+@media (max-width: 767px) {
+  #event-results .t-date {
+    font-size: min(var(--date-fs), calc((50vw - 42px) / 9));
+  }
+}
+
+/* What's On (EventGrid layout="stack"), after the newsletter: when and the title in one size and weight (the
+   email's 30px, at 600 as the site's other titles and text), when in grey, set as the pages' text (1.2, no letter-spacing); the buttons as the site's others. The type is the
+   site name's size at every width: on phones too (set by the user on 5 Nov 2026; it was the pages' text size there, 22px), so
+   22px at 320px to 26px from 394px, 26px to 30px from 768px. */
+.t-stack {
+  font-size: var(--headline-fs);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.t-stack-btn {
+  display: inline-block;
+  font-size: var(--mid-fs);
+  line-height: var(--mid-lh);
+  font-weight: 500;
+  padding: var(--btn-py) var(--btn-px); /* the size and padding of the site's other buttons (taller on phones, below) */
+}
+/* Phones: Book Tickets and Add to Calendar in the Text size (18px, a step up from the Small size of the footer and the price boxes),
+   as tall as in the newsletter on a phone, 14px above and below the words (13px inside the 1px line), so they are easy to tap; the
+   sides stay the site's. From 768px they are the Small size and the height of every other button. */
+@media (max-width: 767px) {
+  .t-stack-btn {
+    font-size: var(--fs-text);
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+}
+/* hovering a card no longer thickens its line (taken off at the user's request, 6 Nov 2026): the poster still zooms a little and the
+   title is underlined */
